@@ -107,8 +107,12 @@ async function loadStats(){
     document.getElementById('dbStatus').textContent='Firestore ✓';
     document.getElementById('dbStatus').className='badge bg-success';
   }catch(e){
-    document.getElementById('dbStatus').textContent='Check firebase-config';
+    const msg = e.code ? `${e.code}: ${e.message}` : e.message;
+    document.getElementById('dbStatus').textContent= (e.code==='permission-denied'?'Permission denied - check Rules': e.code==='unavailable'?'Firestore not created': msg).slice(0,60);
     document.getElementById('dbStatus').className='badge bg-danger';
+    document.getElementById('dbStatus').title = msg;
+    const alertBox=document.getElementById('alertBox');
+    if(alertBox) alertBox.innerHTML = `<div class="alert alert-danger small">Firestore error: <code>${msg}</code><br>Open <a href="test_connection.html">test_connection.html</a> to diagnose. Common: 1) Create Firestore DB Native mode 2) Publish firestore.rules 3) Enable Auth Email/Password 4) Add <code>${location.hostname}</code> to Auth > Authorized domains 5) Run <a href="seed_admin.html">seed_admin.html</a></div>`;
     console.error(e);
   }
 }

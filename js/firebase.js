@@ -15,8 +15,14 @@ export { onAuthStateChanged, signInWithEmailAndPassword, signOut, collection, ge
 // simple auth guard for pages (easiest - no Worker verification needed for free tier)
 export function requireAuth(redirect='login.html'){
   onAuthStateChanged(auth, user=>{
-    if(!user) location.href=redirect;
-    else {
+    if(!user){
+      // add ?next= so login can redirect back + show hint
+      const next = encodeURIComponent(location.pathname + location.search);
+      // avoid loop if already on login
+      if(!location.pathname.endsWith('login.html')){
+        location.href = `${redirect}?next=${next}`;
+      }
+    } else {
       const el=document.getElementById('userEmail');
       if(el) el.textContent=user.email;
     }

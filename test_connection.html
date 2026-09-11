@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Firestore Connection Test - SMS</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"></head>
+<body class="bg-light">
+<div class="container py-4" style="max-width:800px">
+  <h4>Firebase / Firestore Connection Test</h4>
+  <p class="text-muted small">Project: <code id="cfgProject">-</code> | Auth domain: <code id="cfgAuth">-</code> | Page domain: <code id="pageDomain"></code></p>
+  <div class="card mb-3"><div class="card-body">
+    <div id="step1" class="mb-2">1. Config loaded: <span class="badge bg-secondary">pending</span> <span class="detail"></span></div>
+    <div id="step2" class="mb-2">2. Firebase init: <span class="badge bg-secondary">pending</span> <span class="detail"></span></div>
+    <div id="step3" class="mb-2">3. Auth state: <span class="badge bg-secondary">pending</span> <span class="detail"></span></div>
+    <div id="step4" class="mb-2">4. Firestore read (products): <span class="badge bg-secondary">pending</span> <span class="detail"></span></div>
+    <div id="step5" class="mb-2">5. Firestore write test: <span class="badge bg-secondary">pending</span> <span class="detail"></span></div>
+  </div></div>
+
+  <div class="card mb-3"><div class="card-body">
+    <h6>Quick Login Test (checks Auth + Firestore together)</h6>
+    <div class="row g-2">
+      <div class="col"><input id="email" class="form-control" value="admin@sms3.com" placeholder="email"></div>
+      <div class="col"><input id="pass" class="form-control" value="admin123" type="password" placeholder="password"></div>
+      <div class="col-auto"><button id="loginBtn" class="btn btn-primary">Sign in & test read</button> <button id="seedBtn" class="btn btn-outline-secondary">Seed sample data</button></div>
+    </div>
+    <div id="loginLog" class="mt-2 small" style="white-space:pre-wrap"></div>
+  </div></div>
+
+  <div class="alert alert-warning small">
+    <b>Common fixes if red:</b><br>
+    • Console > Firestore Database > <b>Create database > Native mode > us-central</b> (if step 4 = "database does not exist" or "Failed to get document" offline)<br>
+    • Console > Firestore > Rules > paste <code>Deploy/firestore.rules</code> > Publish (if step 4 = permission-denied)<br>
+    • Console > Authentication > Sign-in method > Email/Password > <b>Enable</b> (if login = operation-not-allowed)<br>
+    • Console > Authentication > Settings > Authorized domains > Add <code id="needDomain"></code> + <code>s-r-management.pages.dev</code> (if login = unauthorized-domain)<br>
+    • Run <a href="seed_admin.html">seed_admin.html</a> first to create admin@sms3.com (if login = user-not-found)<br>
+    • Check <code>firebase-config.js</code> matches Console > Project Settings > Your apps<br>
+  </div>
+  <a href="login.html" class="btn btn-link">Go to Login</a> <a href="index.html" class="btn btn-link">Dashboard</a>
+</div>
+<script type="module">
+import { firebaseConfig } from "./firebase-config.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+import { getFirestore, collection, getDocs, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+
+function badge(el, ok, txt){ const b=el.querySelector('.badge'); b.textContent=ok? '✓ '+txt : '✘ '+txt; b.className= ok? 'badge bg-success':'badge bg-danger'; }
+function detail(el, txt){ el.querySelector('.detail').textContent=' - '+txt; }
+
+document.getElementById('cfgProject').textContent=firebaseConfig.projectId;
+document.getElementById('cfgAuth').textContent=firebaseConfig.authDomain;
+document.getElementById('pageDomain').textContent=location.hostname;
+document.getElementById('needDomain').textContent=location.hostname;
+
+const s1=document.getElementById('step1');
+if(firebaseConfig.apiKey && firebaseConfig.apiKey!=="YOUR_API_KEY"){ badge(s1,true,'ok'); detail(s1, firebaseConfig.projectId); }
+else{ badge(s1,false,'firebase-config.js still placeholder'); detail(s1,'edit Deploy/firebase-config.js'); }
+
+let app, auth, db;
+const s2=document.getElementById('step2');
+try{ app=initializeApp(firebaseConfig); auth=getAuth(app); db=getFirestore(app); badge(s2,true,'initialized'); detail(s2, firebaseConfig.projectId); }
+catch(e){ badge(s2,false,e.message); detail(s2, e.code||''); }
+
+const s3=document.getElementById('step3');
+onAuthStateChanged(auth, u=>{
+  if(u){ badge(s3,true,'signed in as '+u.email); detail(s3, u.uid); testRead(); }
+  else{ badge(s3,false,'not signed in (login required for rules request.auth != null)'); detail(s3,'go to login or use Quick Login below'); }
+});
+
+const s4=document.getElementById('step4');
+async function testRead(){
+  try{
+    const snap=await getDocs(collection(db,'products'));
+    badge(s4,true,`read ${snap.size} docs`); detail(s4, snap.empty? 'collection empty but connected ✓ (seed data)' : 'connected ✓');
+    if(snap.size>0) detail(s4, `first: ${snap.docs[0].id} ${JSON.stringify(snap.docs[0].data()).slice(0,80)}`);
+  }catch(e){
+    badge(s4,false,e.code||e.message); detail(s4, e.message + (e.code==='permission-denied'?' -> fix Rules': e.message.includes('database')?' -> create Firestore DB':''));
+    console.error(e);
+  }
+}
+const s5=document.getElementById('step5');
+async function testWrite(uid){
+  try{
+    await setDoc(doc(db,'_healthcheck','test'), {at: serverTimestamp(), by: uid||'anon', ok:true}, {merge:true});
+    badge(s5,true,'write ok'); detail(s5,'_healthcheck/test written');
+  }catch(e){ badge(s5,false,e.code||e.message); detail(s5, e.message); }
+}
+// initial unauth read attempt (will fail if rules require auth, that's expected)
+setTimeout(()=>{ if(auth && !auth.currentUser) testRead(); }, 800);
+
+// quick login
+document.getElementById('loginBtn').onclick= async ()=>{
+  const email=document.getElementById('email').value, pass=document.getElementById('pass').value;
+  const log=document.getElementById('loginLog'); log.textContent='';
+  try{
+    log.textContent+='Signing in...\n';
+    const cred=await signInWithEmailAndPassword(auth, email, pass);
+    log.textContent+=`✓ Signed in ${cred.user.uid}\n`;
+    const snap=await getDocs(collection(db,'products'));
+    log.textContent+=`✓ Read products: ${snap.size} docs\n`;
+    if(snap.empty) log.textContent+='(empty -> seed data)\n';
+    await testWrite(cred.user.uid);
+    log.textContent+= 'Done.\n';
+  }catch(e){ log.textContent+=`✘ ${e.code}: ${e.message}\n`; console.error(e); }
+};
+document.getElementById('seedBtn').onclick= async ()=>{
+  const log=document.getElementById('loginLog'); log.textContent='Seeding sample product...\n';
+  try{
+    if(!auth.currentUser) throw new Error('Sign in first (rules require auth)');
+    await setDoc(doc(db,'products','sample_F3208'), {sku:'F3208', name:'light', category:'Electronic', description:'Sinlight', price:200, stock:15, createdAt: serverTimestamp()}, {merge:true});
+    log.textContent+='✓ products/sample_F3208 written. Refresh dashboard.\n';
+    testRead();
+  }catch(e){ log.textContent+=`✘ ${e.message}\n`; }
+};
+</script>
+</body></html>

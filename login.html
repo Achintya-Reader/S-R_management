@@ -27,8 +27,21 @@ document.getElementById('loginForm').addEventListener('submit', async e=>{
   const email=fd.get('email'), password=fd.get('password');
   const err=document.getElementById('error');
   err.style.display='none';
-  try{ await signInWithEmailAndPassword(auth,email,password); location.href='index.html'; }
-  catch(ex){ err.textContent=ex.message; err.style.display='block'; }
+  try{
+    await signInWithEmailAndPassword(auth,email,password);
+    const next = new URLSearchParams(location.search).get('next');
+    location.href = next ? decodeURIComponent(next) : 'index.html';
+  }
+  catch(ex){
+    const code = ex.code || '';
+    let hint = '';
+    if(code==='auth/operation-not-allowed') hint = '<br><small>Fix: Console > Authentication > Sign-in method > Email/Password > Enable</small>';
+    else if(code==='auth/unauthorized-domain') hint = `<br><small>Fix: Console > Auth > Settings > Authorized domains > Add ${location.hostname}</small>`;
+    else if(code==='auth/user-not-found' || code==='auth/invalid-credential') hint = '<br><small>Fix: Run <a href="seed_admin.html">seed_admin.html</a> to create admin@sms3.com</small>';
+    else if(code==='auth/network-request-failed') hint = '<br><small>Network - check internet / firebase-config.js</small>';
+    err.innerHTML = `${ex.code}: ${ex.message}${hint} <br><small><a href="test_connection.html">Open test_connection.html</a> for full diagnose</small>`;
+    err.style.display='block';
+  }
 });
 </script>
 </body>
