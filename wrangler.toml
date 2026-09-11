@@ -1,6 +1,12 @@
-# Cloudflare Pages — no wrangler deploy needed. Pages builds static + functions/ automatically.
-# Keep minimal config for local `wrangler pages dev`. Do NOT run `wrangler deploy` in Pages build.
+name = "s-r-management"
 compatibility_date = "2024-01-01"
 
-# For Workers deployment use: wrangler pages deploy ./ --project-name=sms3
-# Env vars: FIREBASE_PROJECT_ID, FIREBASE_SERVICE_ACCOUNT (optional), REQUIRE_AUTH
+# For Cloudflare Pages (recommended): Build command = (empty), Output = "." — no wrangler deploy needed
+# For fallback if dashboard still runs `npx wrangler deploy`, serve static as Workers Assets:
+[assets]
+directory = "."
+not_found_handling = "single-page-application"
+
+# To deploy via CLI correctly for Pages use:
+#   npx wrangler pages deploy ./ --project-name=s-r-management
+# (not `npx wrangler deploy`)
