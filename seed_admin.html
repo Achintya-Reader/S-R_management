@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Seed Admin - SMS3</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"></head>
+<body class="bg-light">
+<div class="container py-5" style="max-width:520px">
+  <div class="card shadow-sm">
+    <div class="card-body p-4">
+      <h5>Seed Admin to Firestore + Auth</h5>
+      <p class="text-muted small">Project: <code>fir-r-management</code> — creates <b>admin@sms3.com / admin123</b> in Firebase Auth + <code>users/{uid}</code> in Firestore.</p>
+      <div class="mb-3"><label class="form-label">Admin Email</label><input id="email" class="form-control" value="admin@sms3.com"></div>
+      <div class="mb-3"><label class="form-label">Password</label><input id="password" class="form-control" value="admin123"></div>
+      <div class="mb-3"><label class="form-label">Name</label><input id="name" class="form-control" value="Admin"></div>
+      <button id="seedBtn" class="btn btn-primary w-100">Create / Update Admin</button>
+      <div id="log" class="mt-3 small" style="white-space:pre-wrap"></div>
+      <a href="login.html" class="btn btn-link mt-3">Go to Login</a>
+    </div>
+  </div>
+  <div class="alert alert-info mt-3 small">If you get <code>auth/email-already-in-use</code>, it will sign in and just ensure Firestore doc exists. After success, delete this file or protect it.</div>
+</div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+import { firebaseConfig } from "./firebase-config.js";
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const log = (m)=> document.getElementById('log').textContent += m+"\n";
+
+document.getElementById('seedBtn').onclick = async ()=>{
+  const email=document.getElementById('email').value.trim();
+  const password=document.getElementById('password').value;
+  const name=document.getElementById('name').value.trim();
+  const btn=document.getElementById('seedBtn');
+  btn.disabled=true; log(`Seeding ${email} ...`);
+  let user=null;
+  try{
+    const cred=await createUserWithEmailAndPassword(auth, email, password);
+    user=cred.user; log(`✓ Auth created: ${user.uid}`);
+  }catch(e){
+    log(`createUser: ${e.code} ${e.message}`);
+    if(e.code==='auth/email-already-in-use'){
+      try{
+        const cred2=await signInWithEmailAndPassword(auth, email, password);
+        user=cred2.user; log(`✓ Signed in existing: ${user.uid}`);
+      }catch(e2){ log(`signIn failed: ${e2.message}`); btn.disabled=false; return; }
+    } else { btn.disabled=false; return; }
+  }
+  try{
+    // mirrors users table: id, name, email, is_active, created_at
+    await setDoc(doc(db,'users', user.uid), {
+      name, email, is_active:1, isActive:true, role:'admin',
+      createdAt: serverTimestamp(), created_at: new Date().toISOString()
+    }, {merge:true});
+    log(`✓ Firestore users/${user.uid} written`);
+    log(`\n✅ Admin ready. Email: ${email} Pass: ${password}`);
+  }catch(e){ log(`Firestore error: ${e.message} (check firestore.rules and Auth)`); }
+  btn.disabled=false;
+};
+</script>
+</body></html>
