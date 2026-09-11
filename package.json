@@ -5,7 +5,7 @@
   "scripts": {
     "migrate": "node migrate.js",
     "pages:dev": "wrangler pages dev ./ --port 8788",
-    "deploy:pages": "wrangler pages publish ./ --project-name=sms3",
+    "deploy:pages": "wrangler pages deploy ./ --project-name=sms3",
     "deploy:firebase": "firebase deploy --only firestore:rules,hosting"
   },
   "dependencies": {
