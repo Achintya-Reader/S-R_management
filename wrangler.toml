@@ -1,6 +1,6 @@
+name = "s-r-management"
 compatibility_date = "2024-01-01"
 pages_build_output_dir = "."
 
 # Pages Functions in ./functions/api/*.js auto-detected
-# Build command in Dashboard must be `npm run build` (or empty) — NOT `npx wrangler deploy`
-# Local dev: npm run pages:dev  |  Deploy CLI: npm run deploy:pages
+# Build command in Dashboard: npm run build -> Output: .
