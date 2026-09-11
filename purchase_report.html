@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Reports - SMS</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"><link href="assets/css/style.css" rel="stylesheet"></head>
+<body><div class="site-wrapper d-flex flex-column min-vh-100">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top"><div class="container-fluid"><a class="navbar-brand" href="index.html">Stock Management System</a><button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navbarNav"><ul class="navbar-nav ms-auto"><li class="nav-item"><span id="userEmail" class="navbar-text text-white me-3"></span></li><li class="nav-item"><a class="nav-link" href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li></ul></div></div></nav>
+<div class="container-fluid flex-grow-1" style="padding-top:70px"><div class="row">
+<nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"><div class="position-sticky pt-3"><ul class="nav flex-column"><li class="nav-item"><a class="nav-link" href="index.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li><li class="nav-item"><a class="nav-link" href="customers.html"><i class="fas fa-users"></i> Customers</a></li><li class="nav-item"><a class="nav-link" href="suppliers.html"><i class="fas fa-truck"></i> Suppliers</a></li><li class="nav-item"><a class="nav-link" href="products.html"><i class="fas fa-box"></i> Products</a></li><li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="fas fa-shopping-cart"></i> Orders</a><ul class="dropdown-menu"><li><a class="dropdown-item" href="purchase_orders.html">Purchase Orders</a></li><li><a class="dropdown-item" href="sell_orders.html">Sell Orders</a></li><li><a class="dropdown-item" href="purchase_report.html">Purchase Report</a></li><li><a class="dropdown-item" href="sell_report.html">Sell Report</a></li></ul></li><li class="nav-item"><a class="nav-link" href="sales.html"><i class="fas fa-dollar-sign"></i> Sales</a></li><li class="nav-item"><a class="nav-link active" href="reports.html"><i class="fas fa-chart-bar"></i> Reports</a></li></ul></div></nav>
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+<style>.report-page{background:#95dbd9ff;padding:30px 35px;border-radius:15px;border:1px solid #f40707ff;box-shadow:0 8px 20px rgba(245,118,7,1);max-width:850px;margin:30px auto}.report-page h1{font-size:26px;text-align:center;margin-bottom:20px;background:linear-gradient(90deg,#0d3aeeff,#1cc88a);color:#070707ff;padding:15px;border-radius:12px}.report-container h4{border-bottom:3px solid #f55709ff;padding-bottom:8px;margin-bottom:12px;color:#f70606ff}.report-item{margin-bottom:8px}</style>
+<div class="report-page">
+  <h1>Stock Management System Report Sheet</h1>
+  <div class="text-center mb-3">
+    <select id="filter" class="form-select d-inline w-auto"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option><option value="custom">Custom</option></select>
+    <span id="customDates" style="display:none"><input type="date" id="startDate"> <input type="date" id="endDate"> <button id="applyCustom" class="btn btn-sm btn-primary">Apply</button></span>
+    <button id="downloadPdf" class="btn btn-danger btn-sm"><i class="fas fa-file-pdf"></i> Download PDF</button>
+  </div>
+  <div class="text-center small"><em id="periodLabel"></em></div>
+  <div class="report-container"><h4>General Information</h4><div class="report-item"><strong>Total Customers:</strong> <span id="totalCustomers">-</span></div><div class="report-item"><strong>Total Suppliers:</strong> <span id="totalSuppliers">-</span></div><div class="report-item"><strong>Total Products:</strong> <span id="totalProducts">-</span></div><div class="report-item"><strong>Total Purchase Value:</strong> <span id="totalPurchase">-</span></div><div class="report-item"><strong>Total Sales Value:</strong> <span id="totalSalesVal">-</span></div></div>
+  <div class="report-container"><h4>Purchase Orders</h4><div class="report-item" id="purchasePending"></div><div class="report-item" id="purchaseComplete"></div></div>
+  <div class="report-container"><h4>Sales Orders</h4><div class="report-item" id="sellPending"></div><div class="report-item" id="sellComplete"></div></div>
+  <div class="report-container"><h4>Direct Sales</h4><div class="report-item"><strong>Total Qty:</strong> <span id="directQty">-</span></div><div class="report-item"><strong>Total Value:</strong> <span id="directVal">-</span></div><div id="categoryStats"></div><div class="report-item"><strong>Profit/Loss:</strong> <span id="directProfit"></span></div></div>
+  <div class="report-container"><h4>Total Product Stock & Value</h4><div class="report-item"><strong>Total Stock:</strong> <span id="totalStock">-</span></div><div class="report-item"><strong>Total Stock Value:</strong> <span id="totalStockVal">-</span></div><div class="report-item"><strong>Overall Profit:</strong> <span id="overallProfit"></span></div></div>
+</div>
+</main></div></div><footer class="site-footer bg-dark text-white text-center py-2 mt-auto">|| MD. MAHAFUZ ISLAM - ID: 23203039||</footer></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script type="module">
+import { auth, db, requireAuth, signOut, collection, getDocs } from "./js/firebase.js";
+requireAuth(); document.getElementById('logoutBtn').addEventListener('click', async e=>{e.preventDefault(); await signOut(auth); location.href='login.html';});
+let cache={customers:[],suppliers:[],products:[],purchase:[],sell:[],sales:[]};
+async function loadAll(){
+  const [c,s,p,po,so,sa]=await Promise.all([getDocs(collection(db,'customers')),getDocs(collection(db,'suppliers')),getDocs(collection(db,'products')),getDocs(collection(db,'purchase_orders')),getDocs(collection(db,'sell_orders')),getDocs(collection(db,'sales'))]);
+  cache.customers=c.docs.map(d=>({id:d.id,...d.data()}));
+  cache.suppliers=s.docs.map(d=>({id:d.id,...d.data()}));
+  cache.products=p.docs.map(d=>({id:d.id,...d.data()}));
+  cache.purchase=po.docs.map(d=>({id:d.id,...d.data()}));
+  cache.sell=so.docs.map(d=>({id:d.id,...d.data()}));
+  cache.sales=sa.docs.map(d=>({id:d.id,...d.data()}));
+  render();
+}
+function getRange(filter){
+  const now=new Date();
+  let start,end=new Date();
+  if(filter==='daily'){ start=new Date(now); start.setHours(0,0,0,0); end=new Date(now); end.setHours(23,59,59,999); }
+  else if(filter==='weekly'){const day=now.getDay()||7; start=new Date(now); start.setDate(now.getDate()-(day-1)); start.setHours(0,0,0,0); end=new Date(start); end.setDate(start.getDate()+6); end.setHours(23,59,59,999); }
+  else if(filter==='monthly'){ start=new Date(now.getFullYear(), now.getMonth(),1); end=new Date(now.getFullYear(), now.getMonth()+1,0,23,59,59,999); }
+  else if(filter==='yearly'){ start=new Date(now.getFullYear(),0,1); end=new Date(now.getFullYear(),11,31,23,59,59,999); }
+  else if(filter==='custom'){ const s=document.getElementById('startDate').value, e=document.getElementById('endDate').value; if(s&&e){ start=new Date(s); end=new Date(e); end.setHours(23,59,59,999); } else { start=new Date(0); } }
+  else { start=new Date(0); }
+  return {start,end};
+}
+function inRange(d, start,end){
+  if(!d) return false;
+  const date = d.toDate ? d.toDate() : new Date(d);
+  return date>=start && date<=end;
+}
+function render(){
+  const filter=document.getElementById('filter').value;
+  const {start,end}=getRange(filter);
+  document.getElementById('periodLabel').textContent=`Report Period: ${start.toLocaleString()} to ${end.toLocaleString()}`;
+  // general
+  document.getElementById('totalCustomers').textContent=cache.customers.length;
+  document.getElementById('totalSuppliers').textContent=cache.suppliers.length;
+  document.getElementById('totalProducts').textContent=cache.products.length;
+  // purchase
+  let pFilt=cache.purchase.filter(r=> inRange(r.createdAt||r.created_at, start,end) && (r.status||'').toLowerCase()!=='cancelled');
+  let pPending=pFilt.filter(r=> (r.status||'').toLowerCase()==='pending');
+  let pComplete=pFilt.filter(r=> (r.status||'').toLowerCase()==='complete');
+  const sum=(arr, fn)=> arr.reduce((a,b)=>a+fn(b),0);
+  document.getElementById('totalPurchase').textContent='$'+ sum(pFilt, r=> Number(r.quantity||0)*Number(r.price||0)).toFixed(2);
+  document.getElementById('purchasePending').innerHTML=`<strong>Pending:</strong> Qty ${sum(pPending,r=>Number(r.quantity||0))} | Amount $${sum(pPending,r=>Number(r.quantity)*Number(r.price)).toFixed(2)}`;
+  document.getElementById('purchaseComplete').innerHTML=`<strong>Completed:</strong> Qty ${sum(pComplete,r=>Number(r.quantity||0))} | Amount $${sum(pComplete,r=>Number(r.quantity)*Number(r.price)).toFixed(2)}`;
+  // sell orders
+  let sFilt=cache.sell.filter(r=> inRange(r.createdAt||r.created_at, start,end));
+  let sPending=sFilt.filter(r=> (r.status||'').toLowerCase()==='pending');
+  let sComplete=sFilt.filter(r=> (r.status||'').toLowerCase()==='complete');
+  document.getElementById('totalSalesVal').textContent='$'+ sum(sFilt, r=> Number(r.quantity||0)*Number(r.price||0)).toFixed(2);
+  document.getElementById('sellPending').innerHTML=`<strong>Pending:</strong> ${sum(sPending,r=>Number(r.quantity||0))} ($${sum(sPending,r=>Number(r.quantity)*Number(r.price)).toFixed(2)})`;
+  let sellProfit=0;
+  sComplete.forEach(r=>{
+    const prod=cache.products.find(p=>p.id===r.product_id);
+    if(prod) sellProfit += (Number(r.price)-Number(prod.price||0))*Number(r.quantity||0);
+  });
+  document.getElementById('sellComplete').innerHTML=`<strong>Completed:</strong> ${sum(sComplete,r=>Number(r.quantity||0))} ($${sum(sComplete,r=>Number(r.quantity)*Number(r.price)).toFixed(2)}) | Profit: $${sellProfit.toFixed(2)}`;
+  // direct sales
+  let dFilt=cache.sales.filter(r=> inRange(r.sale_date||r.saleDate||r.createdAt, start,end));
+  document.getElementById('directQty').textContent=sum(dFilt,r=>Number(r.qty||r.quantity||0));
+  document.getElementById('directVal').textContent='$'+ sum(dFilt,r=>Number(r.total||0)).toFixed(2);
+  let cogs=0;
+  dFilt.forEach(r=>{
+    const prod=cache.products.find(p=>p.id===r.product_id);
+    if(prod) cogs+= Number(prod.price||0)*Number(r.qty||r.quantity||0);
+  });
+  const directProfit = sum(dFilt,r=>Number(r.total||0)) - cogs;
+  const el=document.getElementById('directProfit'); el.textContent='$'+directProfit.toFixed(2); el.className= directProfit>=0?'text-success':'text-danger';
+  // category stats like Project/reports.php:133-142
+  const catDiv=document.getElementById('categoryStats'); catDiv.innerHTML='';
+  const cats={};
+  cache.products.forEach(p=>{
+    const cat=p.category||'Uncategorized';
+    if(!cats[cat]) cats[cat]={stock:p.stock||0, sold_qty:0, sold_val:0};
+    else cats[cat].stock += Number(p.stock||0);
+  });
+  dFilt.forEach(r=>{
+    const prod=cache.products.find(p=>p.id===r.product_id);
+    if(prod){ const cat=prod.category||'Uncategorized'; cats[cat].sold_qty+=Number(r.qty||r.quantity||0); cats[cat].sold_val+=Number(r.total||0); }
+  });
+  Object.entries(cats).forEach(([cat, v])=>{
+    const d=document.createElement('div'); d.className='report-item'; d.innerHTML=`<strong>Category: ${cat}:</strong> Stock ${v.stock} | Sold ${v.sold_qty} ($${v.sold_val.toFixed(2)})`; catDiv.appendChild(d);
+  });
+  // stock totals like Project/reports.php:146
+  const totalStock=sum(cache.products, p=>Number(p.stock||0));
+  const totalStockVal=sum(cache.products, p=>Number(p.stock||0)*Number(p.price||0));
+  document.getElementById('totalStock').textContent=totalStock;
+  document.getElementById('totalStockVal').textContent='$'+totalStockVal.toFixed(2);
+  const overall=sellProfit+directProfit;
+  const oEl=document.getElementById('overallProfit'); oEl.textContent='$'+overall.toFixed(2); oEl.className= overall>=0?'text-success':'text-danger';
+}
+document.getElementById('filter').addEventListener('change', e=>{
+  document.getElementById('customDates').style.display= e.target.value==='custom' ? 'inline' : 'none';
+  render();
+});
+document.getElementById('applyCustom').addEventListener('click', render);
+document.getElementById('downloadPdf').addEventListener('click', ()=>{
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF();
+  doc.text("Stock Management Report",10,10);
+  doc.text(document.getElementById('periodLabel').textContent,10,20);
+  let y=30;
+  document.querySelectorAll('.report-item').forEach(el=>{ doc.text(el.textContent,10,y); y+=7; if(y>280){doc.addPage(); y=10;} });
+  doc.save("report.pdf");
+});
+loadAll();
+</script>
+</body></html>

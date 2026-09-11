@@ -1,0 +1,340 @@
+/* ===== Body & Background ===== */
+body {
+    padding-top: 56px;
+    background-color: #a8c6d8;
+    /* background-image: url('http://localhost/SMS3/picture/a.jpg'); */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #070707e8;
+}
+
+/* ===== Navbar / Header ===== */
+.navbar {
+    background-color: #575d64 !important;
+}
+.navbar-brand {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #080808 !important;
+    letter-spacing: 0.5px;
+}
+
+.navbar-brand:hover {
+    color: #eac10af2 !important;
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+    /* background-image: url('http://localhost/SMS3/picture/i.jpg'); */
+    background-color: #283e53;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh;
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar .nav-link {
+    font-weight: 500;
+    color: #0b0b0b;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin: 4px 8px;
+    transition: all 0.3s ease;
+    background-color: rgba(200, 203, 216, 0.901);
+    align-items: center;
+}
+
+.sidebar .nav-link i {
+    margin-right: 0.5rem;
+    color: #2906ed;
+}
+
+.sidebar .nav-link.active,
+.sidebar .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #ffc107;
+    font-weight: bold;
+}
+
+/* ===== Main Content ===== */
+main {
+    padding-top: 1.5rem;
+}
+
+/* ===== Footer ===== */
+.site-footer {
+    background-color: #0430f1;
+    color: #4909ed;
+    padding: 15px 20px;
+    text-align: center;
+    font-size: 0.95rem;
+    box-shadow: 0 -2px 6px rgba(4, 24, 252, 0.86);
+}
+
+.site-footer a {
+    color: #f0ba18;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.site-footer a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+/* ===== Stylish Dashboard Cards ===== */
+.card-dashboard {
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(232, 9, 9, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    color: #020202;
+    padding: 20px 18px;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-dashboard i {
+    font-size: 2.2rem;
+    opacity: 0.7;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Hover effect for card */
+.card-dashboard:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 25px rgba(14, 2, 249, 0.849);
+}
+
+.card-dashboard:hover i {
+    transform: scale(1.2);
+    opacity: 1;
+}
+
+/* Individual card gradients */
+/* .card-dashboard.products {
+    background: linear-gradient(135deg, #dce2dd, #07f03a);
+}
+
+.card-dashboard.customers {
+    background: linear-gradient(135deg, #e4e5e7, #0762eb);
+}
+
+.card-dashboard.suppliers {
+    background: linear-gradient(135deg, #fbfaf9, #f4b803);
+    color: #d42828;
+}
+
+.card-dashboard.sales {
+    background: linear-gradient(135deg, #e8e3e4, #ed021a);
+} */
+
+/* Card text */
+.card-dashboard .card-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.card-dashboard .card-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+/* Optional: small accent bar at the bottom */
+.card-dashboard::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 5px;
+    width: 100%;
+    background: rgba(162, 160, 160, 0.2);
+}
+
+/* ===== Tables ===== */
+.table-responsive {
+    margin: 15px 0;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(236, 225, 225, 0.08);
+}
+
+.table, .add-customer-table {
+    border-collapse: separate !important;
+    border-spacing: 0;
+    background-color: #dcd2d2;
+    width: 100%;
+}
+
+.table th, .add-customer-table th {
+    background-color: #0d6efd;
+    color: #ffffff;
+    font-weight: 600;
+    text-align: center;
+    padding: 10px; 
+    background-color: #ffc107;
+}
+
+.table td, .add-customer-table td {
+    vertical-align: middle;
+    text-align: center;
+    padding: 10px;
+}
+
+.table tr:nth-child(even), .add-customer-table tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.table tr:hover, .add-customer-table tr:hover {
+    background-color: #e9ecef;
+}
+
+/* DataTables filter/input */
+.dataTables_wrapper {
+    padding: 15px 0;
+}
+
+.dataTables_length label,
+.dataTables_info,
+.dataTables_filter label {
+    color: #fffefd;
+    font-weight: 600;
+}
+
+.dataTables_filter input[type="search"] {
+    border: 1px solid #0d6efd;
+    background-color: #dfdddd;
+    color: #010101;
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+
+/* ===== Reports Table ===== */
+.report-table {
+    font-size: 0.75rem;
+    line-height: 1.15;
+    border-collapse: collapse !important;
+    width: 100%;
+}
+
+.report-table th, .report-table td {
+    padding: 5px 7.5px;
+    text-align: center;
+    border: 1px solid #0b0b0b;
+}
+
+.report-table th {
+    background-color: #0d6efd;
+    color: #e9e5e5;
+    font-weight: 600;
+}
+
+.report-table tbody tr:nth-child(even) {
+    background-color: #faf4f4;
+}
+
+.report-table tbody tr:hover {
+    background-color: #e0e0e0;
+}
+
+/* ===== Add Customer Form & Table ===== */
+.add-customer-form {
+    background: #ffffff;
+    padding: 20px 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    max-width: 750px;
+    margin: 20px auto;
+    border-top: 4px solid #0d6efd;
+}
+
+.add-customer-form h3 {
+    font-weight: 700;
+    color: #0d6efd;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.add-customer-form label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.add-customer-form input,
+.add-customer-form select,
+.add-customer-form textarea {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 15px;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    background-color: #fafafa;
+    transition: all 0.3s ease;
+}
+
+.add-customer-form input:focus,
+.add-customer-form select:focus,
+.add-customer-form textarea:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 6px rgba(13,110,253,0.25);
+    outline: none;
+    background-color: #fff;
+}
+
+.add-customer-form .btn-submit {
+    background: #0d6efd;
+    color: #fff;
+    font-weight: 600;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 6px;
+    transition: background 0.3s ease;
+}
+
+.add-customer-form .btn-submit:hover {
+    background: #084298;
+}
+
+.add-customer-form .btn-reset {
+    background: #ffc107;
+    color: #000;
+    font-weight: 600;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 6px;
+    margin-left: 10px;
+    transition: background 0.3s ease;
+}
+
+.add-customer-form .btn-reset:hover {
+    background: #e0a800;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 767.98px) {
+    .sidebar {
+        position: static;
+        height: auto;
+        padding-top: 0;
+        background-color: #0d6efd;
+    }
+    main {
+        margin-top: 1rem;
+    }
+    .add-customer-form {
+        padding: 15px;
+    }
+    .table, .add-customer-table, .report-table {
+        font-size: 0.75rem;
+        padding: 4px;
+    }
+}

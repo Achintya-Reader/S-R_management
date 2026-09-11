@@ -1,0 +1,7 @@
+name = "sms3"
+type = "javascript"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = "."
+
+# Cloudflare Pages project - connect via dashboard or `wrangler pages publish ./ --project-name=sms3`
+# Env vars set in Pages dashboard: FIREBASE_PROJECT_ID, FIREBASE_SERVICE_ACCOUNT (optional), REQUIRE_AUTH

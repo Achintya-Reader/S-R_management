@@ -1,0 +1,17 @@
+{
+  "name": "sms3-deploy",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "migrate": "node migrate.js",
+    "pages:dev": "wrangler pages dev ./ --port 8788",
+    "deploy:pages": "wrangler pages publish ./ --project-name=sms3",
+    "deploy:firebase": "firebase deploy --only firestore:rules,hosting"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.0.0"
+  },
+  "devDependencies": {
+    "wrangler": "^3.60.0"
+  }
+}

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Sales - SMS</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"><link href="assets/css/style.css" rel="stylesheet"><link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet"></head>
+<body><div class="site-wrapper d-flex flex-column min-vh-100">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top"><div class="container-fluid"><a class="navbar-brand" href="index.html">Stock Management System</a><button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navbarNav"><ul class="navbar-nav ms-auto"><li class="nav-item"><span id="userEmail" class="navbar-text text-white me-3"></span></li><li class="nav-item"><a class="nav-link" href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li></ul></div></div></nav>
+<div class="container-fluid flex-grow-1" style="padding-top:70px"><div class="row">
+<nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"><div class="position-sticky pt-3"><ul class="nav flex-column"><li class="nav-item"><a class="nav-link" href="index.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li><li class="nav-item"><a class="nav-link" href="customers.html"><i class="fas fa-users"></i> Customers</a></li><li class="nav-item"><a class="nav-link" href="suppliers.html"><i class="fas fa-truck"></i> Suppliers</a></li><li class="nav-item"><a class="nav-link" href="products.html"><i class="fas fa-box"></i> Products</a></li><li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="fas fa-shopping-cart"></i> Orders</a><ul class="dropdown-menu"><li><a class="dropdown-item" href="purchase_orders.html">Purchase Orders</a></li><li><a class="dropdown-item" href="sell_orders.html">Sell Orders</a></li><li><a class="dropdown-item" href="purchase_report.html">Purchase Report</a></li><li><a class="dropdown-item" href="sell_report.html">Sell Report</a></li></ul></li><li class="nav-item"><a class="nav-link active" href="sales.html"><i class="fas fa-dollar-sign"></i> Sales</a></li><li class="nav-item"><a class="nav-link" href="reports.html"><i class="fas fa-chart-bar"></i> Reports</a></li></ul></div></nav>
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+<div class="container-fluid">
+  <div class="d-flex justify-content-between pt-3 pb-2 mb-3 border-bottom"><h1 class="h2">Sales</h1><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#saleModal"><i class="fas fa-plus"></i> Add Sale</button></div>
+  <div class="table-responsive"><table class="table table-striped table-sm" id="salesTable"><thead><tr><th>Sale ID</th><th>Customer</th><th>Product</th><th>Qty</th><th>Price Each</th><th>Total</th><th>Sale Date</th><th>Actions</th></tr></thead><tbody id="tbody"></tbody></table></div>
+  <div class="mt-4"><h4>Direct Sales Summary</h4><table class="table table-bordered w-50"><tr><td>Total Quantity</td><td id="totalQty">0</td></tr><tr><td>Total Value</td><td id="totalVal">$0</td></tr><tr><td>COGS</td><td id="totalCogs">$0</td></tr><tr id="profitRow"><td>Profit</td><td id="totalProfit">$0</td></tr></table></div>
+</div>
+<div class="modal fade" id="saleModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Add Sale</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><form id="saleForm"><input type="hidden" name="id"><div class="modal-body"><div class="mb-3"><label class="form-label">Customer</label><select class="form-select" name="customer_id" id="customer_select" required><option value="">Select Customer</option></select></div><div class="mb-3"><label class="form-label">Product</label><select class="form-select" name="product_id" id="product_select" required><option value="">Select Product</option></select></div><div class="mb-3"><label class="form-label">Quantity</label><input type="number" class="form-control" name="qty" id="qty" min="1" value="1" required><small class="text-muted">Available: <span id="available_stock">0</span></small></div><div class="mb-3"><label class="form-label">Price Each</label><input type="number" step="0.01" class="form-control" name="price_each" id="price_each" required></div><div class="mb-3"><label class="form-label">Total</label><input type="text" class="form-control" id="total" readonly></div></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button><button type="submit" class="btn btn-primary">Save</button></div></form></div></div></div>
+</main></div></div><footer class="site-footer bg-dark text-white text-center py-2 mt-auto">|| MD. MAHAFUZ ISLAM - ID: 23203039||</footer></div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script><script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script><script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script><script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module">
+import { auth, db, requireAuth, signOut, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, getDoc, serverTimestamp } from "./js/firebase.js";
+requireAuth(); document.getElementById('logoutBtn').addEventListener('click', async e=>{e.preventDefault(); await signOut(auth); location.href='login.html';});
+let dt, productsCache=[], customersCache=[];
+async function loadDropdowns(){
+  const [cSnap,pSnap]=await Promise.all([getDocs(collection(db,'customers')), getDocs(collection(db,'products'))]);
+  customersCache=cSnap.docs.map(d=>({id:d.id,...d.data()}));
+  productsCache=pSnap.docs.map(d=>({id:d.id,...d.data()}));
+  const cs=document.getElementById('customer_select'); cs.innerHTML='<option value="">Select Customer</option>';
+  customersCache.forEach(c=>{ const o=document.createElement('option'); o.value=c.id; o.textContent=c.name; cs.appendChild(o); });
+  const ps=document.getElementById('product_select'); ps.innerHTML='<option value="">Select Product</option>';
+  productsCache.forEach(p=>{ const o=document.createElement('option'); o.value=p.id; o.dataset.price=p.price; o.dataset.stock=p.stock; o.textContent=`${p.name} (Stock:${p.stock})`; ps.appendChild(o); });
+}
+function updateTotal(){ const q=Number(document.getElementById('qty').value||0), pr=Number(document.getElementById('price_each').value||0); document.getElementById('total').value='$'+(q*pr).toFixed(2); }
+document.getElementById('product_select').addEventListener('change', e=>{
+  const sel=e.target.selectedOptions[0];
+  if(!sel) return;
+  if(!document.querySelector('#saleForm input[name="id"]').value) document.getElementById('price_each').value=sel.dataset.price||'';
+  document.getElementById('available_stock').textContent=sel.dataset.stock||0;
+  updateTotal();
+});
+document.getElementById('qty').addEventListener('input', updateTotal); document.getElementById('price_each').addEventListener('input', updateTotal);
+
+async function loadSales(){
+  const snap=await getDocs(collection(db,'sales'));
+  const rows=snap.docs.map(d=>({id:d.id,...d.data()}));
+  const tbody=document.getElementById('tbody'); tbody.innerHTML='';
+  let totalQty=0, totalVal=0, cogs=0;
+  // need product price for cogs - use cache
+  rows.forEach(r=>{
+    const cust=customersCache.find(c=>c.id===r.customer_id);
+    const prod=productsCache.find(p=>p.id===r.product_id);
+    const qty=Number(r.qty||r.quantity||0), price=Number(r.price_each||r.price||0);
+    const total= qty*price;
+    totalQty+=qty; totalVal+=total;
+    const prodPrice=Number(prod?.price||0); cogs+= prodPrice*qty;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${r.id.slice(0,6)}</td><td>${cust?.name||r.customer_id}</td><td>${prod?.name||r.product_id}</td><td>${qty}</td><td>$${price.toFixed(2)}</td><td>$${total.toFixed(2)}</td><td>${r.sale_date?.toDate?.().toLocaleString()|| r.saleDate?.toDate?.().toLocaleString()|| r.createdAt?.toDate?.().toLocaleString()||''}</td><td><button class="btn btn-sm btn-primary edit"><i class="fas fa-edit"></i></button> <button class="btn btn-sm btn-danger del"><i class="fas fa-trash"></i></button></td>`;
+    tbody.appendChild(tr);
+    tr.querySelector('.edit').onclick=()=> editSale(r);
+    tr.querySelector('.del').onclick= async ()=>{
+      if(!confirm('Delete? Stock will be restored.')) return;
+      // restore stock: stock + qty
+      const pRef=doc(db,'products', r.product_id);
+      const pSnap=await getDoc(pRef);
+      if(pSnap.exists()){ const cur=Number(pSnap.data().stock||0); await updateDoc(pRef,{stock: cur + qty}); }
+      await deleteDoc(doc(db,'sales', r.id));
+      await loadDropdowns(); loadSales();
+    };
+  });
+  if(dt) dt.destroy(); dt=$('#salesTable').DataTable({order:[[0,'desc']]});
+  document.getElementById('totalQty').textContent=totalQty;
+  document.getElementById('totalVal').textContent='$'+totalVal.toFixed(2);
+  document.getElementById('totalCogs').textContent='$'+cogs.toFixed(2);
+  const profit=totalVal-cogs;
+  document.getElementById('totalProfit').textContent='$'+profit.toFixed(2);
+  const row=document.getElementById('profitRow'); row.className= profit>=0? 'table-success':'table-danger';
+}
+function editSale(r){
+  const f=document.getElementById('saleForm');
+  f.id.value=r.id; f.customer_id.value=r.customer_id; f.product_id.value=r.product_id; f.qty.value=r.qty||r.quantity; f.price_each.value=r.price_each||r.price;
+  document.querySelector('#saleModal .modal-title').textContent='Edit Sale';
+  document.getElementById('product_select').dispatchEvent(new Event('change')); updateTotal();
+  new bootstrap.Modal(document.getElementById('saleModal')).show();
+}
+document.getElementById('saleForm').addEventListener('submit', async e=>{
+  e.preventDefault(); const fd=new FormData(e.target);
+  const id=fd.get('id'), customer_id=fd.get('customer_id'), product_id=fd.get('product_id'), qty=Number(fd.get('qty')), price_each=Number(fd.get('price_each'));
+  const total=qty*price_each;
+  // stock check
+  const pRef=doc(db,'products', product_id);
+  const pSnap=await getDoc(pRef);
+  if(!pSnap.exists()){ alert('Product not found'); return; }
+  const stock=Number(pSnap.data().stock||0);
+  // if editing, restore old qty first logic simplified: require stock >= qty
+  let needed=qty;
+  if(id){
+    const oldSnap=await getDoc(doc(db,'sales', id));
+    if(oldSnap.exists()) needed = qty - Number(oldSnap.data().qty||0);
+  }
+  if(needed > stock){ alert('Quantity exceeds stock! Available: '+stock); return; }
+  // update stock
+  await updateDoc(pRef,{stock: stock - needed});
+  if(id){
+    await updateDoc(doc(db,'sales', id), {customer_id, product_id, qty, quantity:qty, price_each, price:price_each, total, sale_date: serverTimestamp()});
+  } else {
+    await addDoc(collection(db,'sales'), {customer_id, product_id, qty, quantity:qty, price_each, price:price_each, total, sale_date: serverTimestamp(), createdAt: serverTimestamp()});
+  }
+  bootstrap.Modal.getInstance(document.getElementById('saleModal')).hide(); e.target.reset();
+  await loadDropdowns(); loadSales();
+});
+await loadDropdowns(); loadSales();
+document.getElementById('saleModal').addEventListener('hidden.bs.modal', ()=>{ document.getElementById('saleForm').reset(); document.getElementById('saleForm').id.value=''; document.querySelector('#saleModal .modal-title').textContent='Add Sale'; });
+</script>
+</body></html>
