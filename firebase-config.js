@@ -1,10 +1,10 @@
-// Fill with your Firebase project config from Firebase Console > Project Settings > General
-// Free tier: create project at console.firebase.google.com
+// Your web app's Firebase configuration - fir-r-management (provided by user)
 export const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyBTnR7J1QG7jlwUDHDqltZX70CdzWyP6uY",
+  authDomain: "fir-r-management.firebaseapp.com",
+  projectId: "fir-r-management",
+  storageBucket: "fir-r-management.firebasestorage.app",
+  messagingSenderId: "1065104033654",
+  appId: "1:1065104033654:web:15a31c020189106f255c57",
+  measurementId: "G-FQPZR7HFVB"
 };

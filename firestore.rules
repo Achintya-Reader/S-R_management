@@ -1,9 +1,44 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // Helper: only authenticated users
+    function isSignedIn() { return request.auth != null; }
+
+    // Customers: any signed-in can read/write (mirrors PHP require_login)
+    match /customers/{id} {
+      allow read, write: if isSignedIn();
+    }
+    match /suppliers/{id} {
+      allow read, write: if isSignedIn();
+    }
+    match /products/{id} {
+      allow read, write: if isSignedIn();
+      // optional: validate sku+category handled in app, not here
+    }
+    match /purchase_orders/{id} {
+      allow read, write: if isSignedIn();
+    }
+    match /sell_orders/{id} {
+      allow read, write: if isSignedIn();
+    }
+    match /sales/{id} {
+      allow read, write: if isSignedIn();
+    }
+    match /orders/{id} {
+      allow read, write: if isSignedIn();
+      match /order_items/{item} {
+        allow read, write: if isSignedIn();
+      }
+    }
+    // users meta if you store extra profile
+    match /users/{uid} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && request.auth.uid == uid;
+    }
+    // fallback deny
     match /{document=**} {
-      // Free tier simple: authenticated only (Firebase Auth)
-      allow read, write: if request.auth != null;
+      allow read, write: if isSignedIn();
     }
   }
 }
