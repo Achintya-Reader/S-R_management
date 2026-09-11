@@ -17,6 +17,16 @@
       "collectionGroup": "purchase_orders",
       "queryScope": "COLLECTION",
       "fields": [{ "fieldPath": "createdAt", "order": "DESCENDING" }]
+    },
+    {
+      "collectionGroup": "rentals",
+      "queryScope": "COLLECTION",
+      "fields": [{ "fieldPath": "rent_date", "order": "DESCENDING" }]
+    },
+    {
+      "collectionGroup": "rentals",
+      "queryScope": "COLLECTION",
+      "fields": [{ "fieldPath": "status", "order": "ASCENDING" }, { "fieldPath": "due_date", "order": "ASCENDING" }]
     }
   ],
   "fieldOverrides": []

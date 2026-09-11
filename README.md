@@ -1,6 +1,6 @@
-# SMS3 — Cloudflare Pages + Pages Functions + Firebase Firestore (Free)
+# Sales and Rent Management — Cloudflare Pages + Pages Functions + Firebase Firestore (Free)
 
-Converted from `Project/` PHP+MySQL (`includes/config.php:6`, `sms3.sql`) to static + serverless.
+Converted from `Project/` PHP+MySQL (`includes/config.php:6`, `sms3.sql`) to static + serverless. Added **Rentals** module.
 
 ## Stack Chosen (your choices)
 - **A) Cloudflare Pages + Pages Functions** — single `pages.dev` deploy
@@ -28,19 +28,20 @@ export const firebaseConfig = { apiKey:"...", authDomain:"...", projectId:"...",
 ```
 
 ### 3) Migrate Data (optional but recommended)
-- Easiest (no Node): in Firebase Console > Firestore > Start collection `products`, `customers`, `suppliers`, `purchase_orders`, `sell_orders`, `sales` and add docs manually (see `../Project/sms3.sql:44-252` for sample).
+- Easiest (no Node): in Firebase Console > Firestore > Start collection `products`, `customers`, `suppliers`, `purchase_orders`, `sell_orders`, `sales`, `rentals` and add docs manually (see `../Project/sms3.sql:44-252` for sample; rentals: see `rentals.html` schema).
 - Or run `npm i` then `npm run migrate` (parses `sms3.sql` INSERTs, needs `serviceAccountKey.json`). If parser stub, manually add 2-3 docs via console.
+- Rentals: collection `rentals` {customer_id, product_id, quantity, rent_price, days, total, deposit, rent_date, due_date, status: rented/returned/overdue/cancelled}
 
 ### 4) Deploy to Cloudflare Pages (Free)
 ```bash
 npm i -g wrangler firebase-tools
 wrangler login
-wrangler pages publish ./ --project-name=sms3 --branch=main
-# then in Cloudflare Dashboard > Pages > sms3 > Settings > Variables:
+wrangler pages publish ./ --project-name=s-r-management --branch=main
+# then in Cloudflare Dashboard > Pages > s-r-management > Settings > Variables:
 # FIREBASE_PROJECT_ID = your projectId
 # (optional) FIREBASE_SERVICE_ACCOUNT = content of serviceAccountKey.json (stringified)
 ```
-Or connect GitHub: Dashboard > Create application > Pages > Connect to Git > select this `Deploy/` folder > Build settings: Framework preset None, Build command empty, Output directory `.`
+Or connect GitHub: Dashboard > Create application > Pages > Connect to Git > `Achintya-Reader/S-R_management` > Build settings: Framework preset None, Build command `npm run build`, Output directory `.`
 
 Pages Function `/api/*` in `functions/api/*.js` currently return `{useClient:true}` — meaning frontend does direct Firestore via JS SDK (free, no server cost). To enforce server TXs, fill `FIREBASE_SERVICE_ACCOUNT` and extend `functions/api/*.js` with REST.
 
@@ -50,22 +51,23 @@ firebase login
 firebase deploy --only firestore:rules --project YOUR_PROJECT_ID
 ```
 
-Test: open `https://sms3.pages.dev/login.html` > sign in > `index.html` counts should show.
+Test: open `https://s-r-management.pages.dev/login.html` > sign in > `index.html` counts should show (now includes rentals).
 
 ## Structure
 ```
 Deploy/
-  index.html (dashboard counts Project/index.php:8)
+  index.html (dashboard + rentals stats)
   login.html (firebase/auth, replaces Project/login.php:20)
   customers.html -> Firestore `customers` (dup check customer_code)
   suppliers.html -> `suppliers`
   products.html -> `products` (sku+category unique)
+  rentals.html -> Firestore `rentals` {customer, product, qty, rent_price/day, days, total, deposit, rent_date, due_date, status} + stock TX
   sales.html -> `sales` + stock TX `products.stock` (Project/sales.php:37)
   purchase_orders.html -> `purchase_orders` + stock on Complete (Project/purchase_orders.php:51)
   sell_orders.html -> `sell_orders`
-  reports.html -> aggregations (daily/weekly/monthly, pdf via jspdf)
+  reports.html -> aggregations (daily/weekly/monthly, pdf via jspdf) + rentals revenue
   js/firebase.js -> init, requireAuth, getIdToken
-  functions/api/*.js -> Pages Functions (scaffold, uses client SDK fallback)
+  functions/api/*.js -> Pages Functions (scaffold, uses client SDK fallback) includes rentals.js
   firestore.rules, firestore.indexes.json
 ```
 

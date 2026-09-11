@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login - SMS3</title>
+  <title>Login - S-R Management</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
   <style>.login-wrap{max-width:420px;margin:90px auto;padding:25px;border:1px solid #ddd;border-radius:10px;background:#fff}.error{background:#fee2e2;color:#991b1b;padding:10px;border-radius:7px;margin-bottom:12px;display:none}</style>
@@ -12,10 +12,10 @@
   <h2>Login</h2>
   <div id="error" class="error"></div>
   <form id="loginForm">
-    <div class="mb-3"><label>Email</label><input class="form-control" type="email" name="email" required value="admin@sms3.com"></div>
+    <div class="mb-3"><label>Email</label><input class="form-control" type="email" name="email" required value="admin@S-R Management.com"></div>
     <div class="mb-3"><label>Password</label><input class="form-control" type="password" name="password" required value="admin123"></div>
     <button class="btn btn-primary w-100" type="submit">Sign in</button>
-    <div class="mt-3 small text-muted">Firebase Auth - create user in Console > Auth > Users first.<br>Default after migrate: admin@sms3.com / admin123</div>
+    <div class="mt-3 small text-muted">Firebase Auth - create user in Console > Auth > Users first.<br>Default after migrate: admin@S-R Management.com / admin123</div>
   </form>
 </div>
 <script type="module">
@@ -37,7 +37,7 @@ document.getElementById('loginForm').addEventListener('submit', async e=>{
     let hint = '';
     if(code==='auth/operation-not-allowed') hint = '<br><small>Fix: Console > Authentication > Sign-in method > Email/Password > Enable</small>';
     else if(code==='auth/unauthorized-domain') hint = `<br><small>Fix: Console > Auth > Settings > Authorized domains > Add ${location.hostname}</small>`;
-    else if(code==='auth/user-not-found' || code==='auth/invalid-credential') hint = '<br><small>Fix: Run <a href="seed_admin.html">seed_admin.html</a> to create admin@sms3.com</small>';
+    else if(code==='auth/user-not-found' || code==='auth/invalid-credential') hint = '<br><small>Fix: Run <a href="seed_admin.html">seed_admin.html</a> to create admin@S-R Management.com</small>';
     else if(code==='auth/network-request-failed') hint = '<br><small>Network - check internet / firebase-config.js</small>';
     err.innerHTML = `${ex.code}: ${ex.message}${hint} <br><small><a href="test_connection.html">Open test_connection.html</a> for full diagnose</small>`;
     err.style.display='block';

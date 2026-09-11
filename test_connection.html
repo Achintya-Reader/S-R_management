@@ -16,7 +16,7 @@
   <div class="card mb-3"><div class="card-body">
     <h6>Quick Login Test (checks Auth + Firestore together)</h6>
     <div class="row g-2">
-      <div class="col"><input id="email" class="form-control" value="admin@sms3.com" placeholder="email"></div>
+      <div class="col"><input id="email" class="form-control" value="admin@S-R Management.com" placeholder="email"></div>
       <div class="col"><input id="pass" class="form-control" value="admin123" type="password" placeholder="password"></div>
       <div class="col-auto"><button id="loginBtn" class="btn btn-primary">Sign in & test read</button> <button id="seedBtn" class="btn btn-outline-secondary">Seed sample data</button></div>
     </div>
@@ -29,7 +29,7 @@
     • Console > Firestore > Rules > paste <code>Deploy/firestore.rules</code> > Publish (if step 4 = permission-denied)<br>
     • Console > Authentication > Sign-in method > Email/Password > <b>Enable</b> (if login = operation-not-allowed)<br>
     • Console > Authentication > Settings > Authorized domains > Add <code id="needDomain"></code> + <code>s-r-management.pages.dev</code> (if login = unauthorized-domain)<br>
-    • Run <a href="seed_admin.html">seed_admin.html</a> first to create admin@sms3.com (if login = user-not-found)<br>
+    • Run <a href="seed_admin.html">seed_admin.html</a> first to create admin@S-R Management.com (if login = user-not-found)<br>
     • Check <code>firebase-config.js</code> matches Console > Project Settings > Your apps<br>
   </div>
   <a href="login.html" class="btn btn-link">Go to Login</a> <a href="index.html" class="btn btn-link">Dashboard</a>

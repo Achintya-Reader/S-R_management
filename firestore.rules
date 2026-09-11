@@ -25,6 +25,9 @@ service cloud.firestore {
     match /sales/{id} {
       allow read, write: if isSignedIn();
     }
+    match /rentals/{id} {
+      allow read, write: if isSignedIn();
+    }
     match /orders/{id} {
       allow read, write: if isSignedIn();
       match /order_items/{item} {
