@@ -1,12 +1,6 @@
-name = "s-r-management"
 compatibility_date = "2024-01-01"
+pages_build_output_dir = "."
 
-# For Cloudflare Pages (recommended): Build command = (empty), Output = "." — no wrangler deploy needed
-# For fallback if dashboard still runs `npx wrangler deploy`, serve static as Workers Assets:
-[assets]
-directory = "."
-not_found_handling = "single-page-application"
-
-# To deploy via CLI correctly for Pages use:
-#   npx wrangler pages deploy ./ --project-name=s-r-management
-# (not `npx wrangler deploy`)
+# Pages Functions in ./functions/api/*.js auto-detected
+# Build command in Dashboard must be `npm run build` (or empty) — NOT `npx wrangler deploy`
+# Local dev: npm run pages:dev  |  Deploy CLI: npm run deploy:pages
