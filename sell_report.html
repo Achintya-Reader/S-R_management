@@ -21,7 +21,7 @@
   <div class="report-container"><h4>Direct Sales</h4><div class="report-item"><strong>Total Qty:</strong> <span id="directQty">-</span></div><div class="report-item"><strong>Total Value:</strong> <span id="directVal">-</span></div><div id="categoryStats"></div><div class="report-item"><strong>Profit/Loss:</strong> <span id="directProfit"></span></div></div>
   <div class="report-container"><h4>Total Product Stock & Value</h4><div class="report-item"><strong>Total Stock:</strong> <span id="totalStock">-</span></div><div class="report-item"><strong>Total Stock Value:</strong> <span id="totalStockVal">-</span></div><div class="report-item"><strong>Overall Profit:</strong> <span id="overallProfit"></span></div></div>
 </div>
-</main></div></div><footer class="site-footer bg-dark text-white text-center py-2 mt-auto">© Sales and Rent Management</footer></div>
+</main></div></div><footer class="site-footer bg-dark text-white text-center py-2 mt-auto">ï¿½ Sales and Rent Management</footer></div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script type="module">
@@ -67,32 +67,32 @@ function render(){
   let pPending=pFilt.filter(r=> (r.status||'').toLowerCase()==='pending');
   let pComplete=pFilt.filter(r=> (r.status||'').toLowerCase()==='complete');
   const sum=(arr, fn)=> arr.reduce((a,b)=>a+fn(b),0);
-  document.getElementById('totalPurchase').textContent='$'+ sum(pFilt, r=> Number(r.quantity||0)*Number(r.price||0)).toFixed(2);
-  document.getElementById('purchasePending').innerHTML=`<strong>Pending:</strong> Qty ${sum(pPending,r=>Number(r.quantity||0))} | Amount $${sum(pPending,r=>Number(r.quantity)*Number(r.price)).toFixed(2)}`;
-  document.getElementById('purchaseComplete').innerHTML=`<strong>Completed:</strong> Qty ${sum(pComplete,r=>Number(r.quantity||0))} | Amount $${sum(pComplete,r=>Number(r.quantity)*Number(r.price)).toFixed(2)}`;
+  document.getElementById('totalPurchase').textContent='BDT '+ sum(pFilt, r=> Number(r.quantity||0)*Number(r.price||0)).toFixed(2);
+  document.getElementById('purchasePending').innerHTML=`<strong>Pending:</strong> Qty ${sum(pPending,r=>Number(r.quantity||0))} | Amount BDT ${sum(pPending,r=>Number(r.quantity)*Number(r.price)).toFixed(2)}`;
+  document.getElementById('purchaseComplete').innerHTML=`<strong>Completed:</strong> Qty ${sum(pComplete,r=>Number(r.quantity||0))} | Amount BDT ${sum(pComplete,r=>Number(r.quantity)*Number(r.price)).toFixed(2)}`;
   // sell orders
   let sFilt=cache.sell.filter(r=> inRange(r.createdAt||r.created_at, start,end));
   let sPending=sFilt.filter(r=> (r.status||'').toLowerCase()==='pending');
   let sComplete=sFilt.filter(r=> (r.status||'').toLowerCase()==='complete');
-  document.getElementById('totalSalesVal').textContent='$'+ sum(sFilt, r=> Number(r.quantity||0)*Number(r.price||0)).toFixed(2);
-  document.getElementById('sellPending').innerHTML=`<strong>Pending:</strong> ${sum(sPending,r=>Number(r.quantity||0))} ($${sum(sPending,r=>Number(r.quantity)*Number(r.price)).toFixed(2)})`;
+  document.getElementById('totalSalesVal').textContent='BDT '+ sum(sFilt, r=> Number(r.quantity||0)*Number(r.price||0)).toFixed(2);
+  document.getElementById('sellPending').innerHTML=`<strong>Pending:</strong> ${sum(sPending,r=>Number(r.quantity||0))} (BDT ${sum(sPending,r=>Number(r.quantity)*Number(r.price)).toFixed(2)})`;
   let sellProfit=0;
   sComplete.forEach(r=>{
     const prod=cache.products.find(p=>p.id===r.product_id);
     if(prod) sellProfit += (Number(r.price)-Number(prod.price||0))*Number(r.quantity||0);
   });
-  document.getElementById('sellComplete').innerHTML=`<strong>Completed:</strong> ${sum(sComplete,r=>Number(r.quantity||0))} ($${sum(sComplete,r=>Number(r.quantity)*Number(r.price)).toFixed(2)}) | Profit: $${sellProfit.toFixed(2)}`;
+  document.getElementById('sellComplete').innerHTML=`<strong>Completed:</strong> ${sum(sComplete,r=>Number(r.quantity||0))} (BDT ${sum(sComplete,r=>Number(r.quantity)*Number(r.price)).toFixed(2)}) | Profit: BDT ${sellProfit.toFixed(2)}`;
   // direct sales
   let dFilt=cache.sales.filter(r=> inRange(r.sale_date||r.saleDate||r.createdAt, start,end));
   document.getElementById('directQty').textContent=sum(dFilt,r=>Number(r.qty||r.quantity||0));
-  document.getElementById('directVal').textContent='$'+ sum(dFilt,r=>Number(r.total||0)).toFixed(2);
+  document.getElementById('directVal').textContent='BDT '+ sum(dFilt,r=>Number(r.total||0)).toFixed(2);
   let cogs=0;
   dFilt.forEach(r=>{
     const prod=cache.products.find(p=>p.id===r.product_id);
     if(prod) cogs+= Number(prod.price||0)*Number(r.qty||r.quantity||0);
   });
   const directProfit = sum(dFilt,r=>Number(r.total||0)) - cogs;
-  const el=document.getElementById('directProfit'); el.textContent='$'+directProfit.toFixed(2); el.className= directProfit>=0?'text-success':'text-danger';
+  const el=document.getElementById('directProfit'); el.textContent='BDT '+directProfit.toFixed(2); el.className= directProfit>=0?'text-success':'text-danger';
   // category stats like Project/reports.php:133-142
   const catDiv=document.getElementById('categoryStats'); catDiv.innerHTML='';
   const cats={};
@@ -106,15 +106,15 @@ function render(){
     if(prod){ const cat=prod.category||'Uncategorized'; cats[cat].sold_qty+=Number(r.qty||r.quantity||0); cats[cat].sold_val+=Number(r.total||0); }
   });
   Object.entries(cats).forEach(([cat, v])=>{
-    const d=document.createElement('div'); d.className='report-item'; d.innerHTML=`<strong>Category: ${cat}:</strong> Stock ${v.stock} | Sold ${v.sold_qty} ($${v.sold_val.toFixed(2)})`; catDiv.appendChild(d);
+    const d=document.createElement('div'); d.className='report-item'; d.innerHTML=`<strong>Category: ${cat}:</strong> Stock ${v.stock} | Sold ${v.sold_qty} (BDT ${v.sold_val.toFixed(2)})`; catDiv.appendChild(d);
   });
   // stock totals like Project/reports.php:146
   const totalStock=sum(cache.products, p=>Number(p.stock||0));
   const totalStockVal=sum(cache.products, p=>Number(p.stock||0)*Number(p.price||0));
   document.getElementById('totalStock').textContent=totalStock;
-  document.getElementById('totalStockVal').textContent='$'+totalStockVal.toFixed(2);
+  document.getElementById('totalStockVal').textContent='BDT '+totalStockVal.toFixed(2);
   const overall=sellProfit+directProfit;
-  const oEl=document.getElementById('overallProfit'); oEl.textContent='$'+overall.toFixed(2); oEl.className= overall>=0?'text-success':'text-danger';
+  const oEl=document.getElementById('overallProfit'); oEl.textContent='BDT '+overall.toFixed(2); oEl.className= overall>=0?'text-success':'text-danger';
 }
 document.getElementById('filter').addEventListener('change', e=>{
   document.getElementById('customDates').style.display= e.target.value==='custom' ? 'inline' : 'none';

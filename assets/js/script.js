@@ -6,7 +6,7 @@ $(function() {
         var price = $('#price_each').val() || 0;
         var total = parseFloat(quantity) * parseFloat(price);
         if (isNaN(total)) total = 0;
-        $('#total').val('$' + total.toFixed(2));
+        $('#total').val('BDT ' + total.toFixed(2));
     }
 
     // If sales table present, initialize handlers

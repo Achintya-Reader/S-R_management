@@ -10,4 +10,4 @@ export async function api(path, opts={}){
   return res.json();
 }
 export function fmt(n){ return Number(n||0).toLocaleString(); }
-export function money(n){ return '$'+Number(n||0).toFixed(2); }
+export function money(n){ return 'BDT '+Number(n||0).toFixed(2); }
