@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Reports - SMS</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"><link href="assets/css/style.css" rel="stylesheet"></head>
 <body><div class="site-wrapper d-flex flex-column min-vh-100">
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top"><div class="container-fluid"><a class="navbar-brand" href="index.html">Sales and Rent Management</a><button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button><div class="collapse navbar-collapse" id="navbarNav"><ul class="navbar-nav ms-auto"><li class="nav-item"><span id="userEmail" class="navbar-text text-white me-3"></span></li><li class="nav-item"><a class="nav-link" href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li></ul></div></div></nav>
 <div class="container-fluid flex-grow-1" style="padding-top:70px"><div class="row">
-<nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"><div class="position-sticky pt-3"><ul class="nav flex-column"><li class="nav-item"><a class="nav-link" href="index.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li><li class="nav-item"><a class="nav-link" href="customers.html"><i class="fas fa-users"></i> Customers</a></li><li class="nav-item"><a class="nav-link" href="suppliers.html"><i class="fas fa-truck"></i> Suppliers</a></li><li class="nav-item"><a class="nav-link" href="products.html"><i class="fas fa-box"></i> Products</a></li><li class="nav-item"><a class="nav-link" href="rentals.html"><i class="fas fa-handshake"></i> Rentals</a></li><li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="fas fa-shopping-cart"></i> Orders</a><ul class="dropdown-menu"><li><a class="dropdown-item" href="purchase_orders.html">Purchase Orders</a></li><li><a class="dropdown-item" href="sell_orders.html">Sell Orders</a></li><li><a class="dropdown-item" href="purchase_report.html">Purchase Report</a></li><li><a class="dropdown-item" href="sell_report.html">Sell Report</a></li></ul></li><li class="nav-item"><a class="nav-link" href="sales.html"><i class="fas fa-dollar-sign"></i> Sales</a></li><li class="nav-item"><a class="nav-link active" href="reports.html"><i class="fas fa-chart-bar"></i> Reports</a></li></ul></div></nav>
+<nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"><div class="position-sticky pt-3"><ul class="nav flex-column"><li class="nav-item"><a class="nav-link" href="index.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li><li class="nav-item"><a class="nav-link" href="customers.html"><i class="fas fa-users"></i> Customers</a></li><li class="nav-item"><a class="nav-link" href="products.html"><i class="fas fa-box"></i> Products</a></li><li class="nav-item"><a class="nav-link" href="rentals.html"><i class="fas fa-handshake"></i> Rentals</a></li><li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="fas fa-shopping-cart"></i> Orders</a><ul class="dropdown-menu"><li><a class="dropdown-item" href="purchase_orders.html">Purchase Orders</a></li><li><a class="dropdown-item" href="sell_orders.html">Sell Orders</a></li><li><a class="dropdown-item" href="purchase_report.html">Purchase Report</a></li><li><a class="dropdown-item" href="sell_report.html">Sell Report</a></li></ul></li><li class="nav-item"><a class="nav-link" href="sales.html"><i class="fas fa-dollar-sign"></i> Sales</a></li><li class="nav-item"><a class="nav-link active" href="reports.html"><i class="fas fa-chart-bar"></i> Reports</a></li></ul></div></nav>
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
 <style>.report-page{background:#95dbd9ff;padding:30px 35px;border-radius:15px;border:1px solid #f40707ff;box-shadow:0 8px 20px rgba(245,118,7,1);max-width:850px;margin:30px auto}.report-page h1{font-size:26px;text-align:center;margin-bottom:20px;background:linear-gradient(90deg,#0d3aeeff,#1cc88a);color:#070707ff;padding:15px;border-radius:12px}.report-container h4{border-bottom:3px solid #f55709ff;padding-bottom:8px;margin-bottom:12px;color:#f70606ff}.report-item{margin-bottom:8px}</style>
 <div class="report-page">
@@ -15,24 +15,23 @@
     <button id="downloadPdf" class="btn btn-danger btn-sm"><i class="fas fa-file-pdf"></i> Download PDF</button>
   </div>
   <div class="text-center small"><em id="periodLabel"></em></div>
-  <div class="report-container"><h4>General Information</h4><div class="report-item"><strong>Total Customers:</strong> <span id="totalCustomers">-</span></div><div class="report-item"><strong>Total Suppliers:</strong> <span id="totalSuppliers">-</span></div><div class="report-item"><strong>Total Products:</strong> <span id="totalProducts">-</span></div><div class="report-item"><strong>Total Purchase Value:</strong> <span id="totalPurchase">-</span></div><div class="report-item"><strong>Total Sales Value:</strong> <span id="totalSalesVal">-</span></div></div>
+  <div class="report-container"><h4>General Information</h4><div class="report-item"><strong>Total Customers:</strong> <span id="totalCustomers">-</span></div><div class="report-item"><strong>Total Products:</strong> <span id="totalProducts">-</span></div><div class="report-item"><strong>Total Purchase Value:</strong> <span id="totalPurchase">-</span></div><div class="report-item"><strong>Total Sales Value:</strong> <span id="totalSalesVal">-</span></div></div>
   <div class="report-container"><h4>Purchase Orders</h4><div class="report-item" id="purchasePending"></div><div class="report-item" id="purchaseComplete"></div></div>
   <div class="report-container"><h4>Sales Orders</h4><div class="report-item" id="sellPending"></div><div class="report-item" id="sellComplete"></div></div>
   <div class="report-container"><h4>Direct Sales</h4><div class="report-item"><strong>Total Qty:</strong> <span id="directQty">-</span></div><div class="report-item"><strong>Total Value:</strong> <span id="directVal">-</span></div><div id="categoryStats"></div><div class="report-item"><strong>Profit/Loss:</strong> <span id="directProfit"></span></div></div>
   <div class="report-container"><h4>Rentals</h4><div class="report-item"><strong>Active:</strong> <span id="rentActive">-</span> | <strong>Overdue:</strong> <span id="rentOverdue">-</span> | <strong>Returned:</strong> <span id="rentReturned">-</span></div><div class="report-item"><strong>Rental Revenue:</strong> <span id="rentRevenue">-</span> | <strong>Deposit Held:</strong> <span id="rentDeposit">-</span></div><div id="rentCategory"></div></div>
   <div class="report-container"><h4>Total Product Stock & Value</h4><div class="report-item"><strong>Total Stock:</strong> <span id="totalStock">-</span></div><div class="report-item"><strong>Total Stock Value:</strong> <span id="totalStockVal">-</span></div><div class="report-item"><strong>Overall Profit:</strong> <span id="overallProfit"></span></div></div>
 </div>
-</main></div></div><footer class="site-footer bg-dark text-white text-center py-2 mt-auto">� Sales and Rent Management</footer></div>
+</main></div></div><footer class="site-footer bg-dark text-white text-center py-2 mt-auto">ï¿½ Sales and Rent Management</footer></div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script type="module">
 import { auth, db, requireAuth, signOut, collection, getDocs } from "./js/firebase.js";
 requireAuth(); document.getElementById('logoutBtn').addEventListener('click', async e=>{e.preventDefault(); await signOut(auth); location.href='login.html';});
-let cache={customers:[],suppliers:[],products:[],purchase:[],sell:[],sales:[],rentals:[]};
+let cache={customers:[],products:[],purchase:[],sell:[],sales:[],rentals:[]};
 async function loadAll(){
-  const [c,s,p,po,so,sa,rent]=await Promise.all([getDocs(collection(db,'customers')),getDocs(collection(db,'suppliers')),getDocs(collection(db,'products')),getDocs(collection(db,'purchase_orders')),getDocs(collection(db,'sell_orders')),getDocs(collection(db,'sales')), getDocs(collection(db,'rentals')).catch(()=>({docs:[]}))]);
+  const [c,p,po,so,sa,rent]=await Promise.all([getDocs(collection(db,'customers')),getDocs(collection(db,'products')),getDocs(collection(db,'purchase_orders')),getDocs(collection(db,'sell_orders')),getDocs(collection(db,'sales')), getDocs(collection(db,'rentals')).catch(()=>({docs:[]}))]);
   cache.customers=c.docs.map(d=>({id:d.id,...d.data()}));
-  cache.suppliers=s.docs.map(d=>({id:d.id,...d.data()}));
   cache.products=p.docs.map(d=>({id:d.id,...d.data()}));
   cache.purchase=po.docs.map(d=>({id:d.id,...d.data()}));
   cache.sell=so.docs.map(d=>({id:d.id,...d.data()}));
@@ -62,7 +61,6 @@ function render(){
   document.getElementById('periodLabel').textContent=`Report Period: ${start.toLocaleString()} to ${end.toLocaleString()}`;
   // general
   document.getElementById('totalCustomers').textContent=cache.customers.length;
-  document.getElementById('totalSuppliers').textContent=cache.suppliers.length;
   document.getElementById('totalProducts').textContent=cache.products.length;
   // purchase
   let pFilt=cache.purchase.filter(r=> inRange(r.createdAt||r.created_at, start,end) && (r.status||'').toLowerCase()!=='cancelled');

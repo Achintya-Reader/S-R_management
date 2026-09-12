@@ -124,11 +124,6 @@ main {
     background: linear-gradient(135deg, #e4e5e7, #0762eb);
 }
 
-.card-dashboard.suppliers {
-    background: linear-gradient(135deg, #fbfaf9, #f4b803);
-    color: #d42828;
-}
-
 .card-dashboard.sales {
     background: linear-gradient(135deg, #e8e3e4, #ed021a);
 } */

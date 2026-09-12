@@ -9,9 +9,6 @@ service cloud.firestore {
     match /customers/{id} {
       allow read, write: if isSignedIn();
     }
-    match /suppliers/{id} {
-      allow read, write: if isSignedIn();
-    }
     match /products/{id} {
       allow read, write: if isSignedIn();
       // optional: validate sku+category handled in app, not here

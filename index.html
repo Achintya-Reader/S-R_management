@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -35,7 +35,6 @@
     <ul class="nav flex-column">
       <li class="nav-item"><a class="nav-link" href="index.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
       <li class="nav-item"><a class="nav-link" href="customers.html"><i class="fas fa-users"></i> Customers</a></li>
-      <li class="nav-item"><a class="nav-link" href="suppliers.html"><i class="fas fa-truck"></i> Suppliers</a></li>
       <li class="nav-item"><a class="nav-link" href="products.html"><i class="fas fa-box"></i> Products</a></li><li class="nav-item"><a class="nav-link" href="rentals.html"><i class="fas fa-handshake"></i> Rentals</a></li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="fas fa-shopping-cart"></i> Orders</a>
@@ -61,7 +60,6 @@
   <div class="row">
     <div class="col-xl-3 col-md-6 mb-4"><div class="card card-dashboard products h-100 py-2"><div class="card-body"><div class="row no-gutters align-items-center"><div class="col mr-2"><div class="text-xs font-weight-bold text-success text-uppercase mb-1">Products</div><div class="h5 mb-0" id="products_count">-</div></div><div class="col-auto"><i class="fas fa-box fa-2x text-gray-300"></i></div></div></div></div></div>
     <div class="col-xl-3 col-md-6 mb-4"><div class="card card-dashboard customers h-100 py-2"><div class="card-body"><div class="row no-gutters align-items-center"><div class="col mr-2"><div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Customers</div><div class="h5 mb-0" id="customers_count">-</div></div><div class="col-auto"><i class="fas fa-users fa-2x text-gray-300"></i></div></div></div></div></div>
-    <div class="col-xl-3 col-md-6 mb-4"><div class="card card-dashboard suppliers h-100 py-2"><div class="card-body"><div class="row no-gutters align-items-center"><div class="col mr-2"><div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Suppliers</div><div class="h5 mb-0" id="suppliers_count">-</div></div><div class="col-auto"><i class="fas fa-truck fa-2x text-gray-300"></i></div></div></div></div></div>
     <div class="col-xl-3 col-md-6 mb-4"><div class="card card-dashboard sales h-100 py-2"><div class="card-body"><div class="row no-gutters align-items-center"><div class="col mr-2"><div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Today's Sales</div><div class="h5 mb-0" id="today_sales">-</div></div><div class="col-auto"><i class="fas fa-dollar-sign fa-2x text-gray-300"></i></div></div></div></div></div>
   </div>
   <div class="row">
@@ -70,11 +68,11 @@
     <div class="col-xl-3 col-md-6 mb-4"><div class="card card-dashboard h-100 py-2" style="border-left:4px solid #1cc88a"><div class="card-body"><div class="row no-gutters align-items-center"><div class="col mr-2"><div class="text-xs font-weight-bold text-success text-uppercase mb-1">Rental Revenue</div><div class="h5 mb-0" id="rentals_revenue">-</div></div><div class="col-auto"><i class="fas fa-coins fa-2x text-gray-300"></i></div></div></div></div></div>
     <div class="col-xl-3 col-md-6 mb-4"><div class="card card-dashboard h-100 py-2" style="border-left:4px solid #858796"><div class="card-body"><div class="row no-gutters align-items-center"><div class="col mr-2"><div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">Total Rentals</div><div class="h5 mb-0" id="rentals_total">-</div></div><div class="col-auto"><i class="fas fa-clipboard-list fa-2x text-gray-300"></i></div></div></div></div></div>
   </div>
-  <div class="alert alert-info small">Counts are live from Firestore. If you see "-", check <code>firebase-config.js</code> and Firestore rules allow <code>request.auth != null</code>. Collections: <code>products, customers, suppliers, sell_orders, sales, rentals</code> | <a href="rentals.html">Rent Items</a> • <a href="test_connection.html">Test Connection</a></div>
+  <div class="alert alert-info small">Counts are live from Firestore. If you see "-", check <code>firebase-config.js</code> and Firestore rules allow <code>request.auth != null</code>. Collections: <code>products, customers, sell_orders, sales, rentals</code> | <a href="rentals.html">Rent Items</a> â€¢ <a href="test_connection.html">Test Connection</a></div>
 </div>
 
 </main></div></div>
-<footer class="site-footer bg-dark text-white text-center py-2 mt-auto">� Sales and Rent Management</footer>
+<footer class="site-footer bg-dark text-white text-center py-2 mt-auto">ï¿½ Sales and Rent Management</footer>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
@@ -89,16 +87,14 @@ document.getElementById('logoutBtn').addEventListener('click', async e=>{ e.prev
 // stats - client SDK (free, same as Project/index.php:8-19) + rentals
 async function loadStats(){
   try{
-    const [p,c,s,sell,rentals] = await Promise.all([
+    const [p,c,sell,rentals] = await Promise.all([
       getDocs(collection(db,'products')),
       getDocs(collection(db,'customers')),
-      getDocs(collection(db,'suppliers')),
       getDocs(collection(db,'sell_orders')),
       getDocs(collection(db,'rentals')).catch(()=>({size:0, forEach:()=>{}}))
     ]);
     document.getElementById('products_count').textContent = p.size;
     document.getElementById('customers_count').textContent = c.size;
-    document.getElementById('suppliers_count').textContent = s.size;
     // today sales sum_price*quantity where status!='cancel' Project/index.php:14
     const today = new Date().toISOString().slice(0,10);
     let total=0;
@@ -129,7 +125,7 @@ async function loadStats(){
     const elO=document.getElementById('rentals_overdue'); if(elO) elO.textContent=overdue;
     const elR=document.getElementById('rentals_revenue'); if(elR) elR.textContent=money(revenue);
     const elT=document.getElementById('rentals_total'); if(elT) elT.textContent=rentals.size || 0;
-    document.getElementById('dbStatus').textContent='Firestore ✓';
+    document.getElementById('dbStatus').textContent='Firestore âœ“';
     document.getElementById('dbStatus').className='badge bg-success';
   }catch(e){
     const msg = e.code ? `${e.code}: ${e.message}` : e.message;
@@ -144,13 +140,12 @@ async function loadStats(){
 loadStats();
 
 // simple search - client filter (no server LIKE) Project/includes/search.php
-let allCache={products:[],customers:[],suppliers:[]};
+let allCache={products:[],customers:[]};
 async function preloadSearch(){
   try{
-    const [p,c,s]=await Promise.all([getDocs(collection(db,'products')), getDocs(collection(db,'customers')), getDocs(collection(db,'suppliers'))]);
+    const [p,c]=await Promise.all([getDocs(collection(db,'products')), getDocs(collection(db,'customers'))]);
     allCache.products=p.docs.map(d=>({id:d.id, ...d.data()}));
     allCache.customers=c.docs.map(d=>({id:d.id, ...d.data()}));
-    allCache.suppliers=s.docs.map(d=>({id:d.id, ...d.data()}));
   }catch(e){ console.warn('search preload',e); }
 }
 preloadSearch();
@@ -164,10 +159,6 @@ function doSearch(term){
   allCache.customers.forEach(r=>{
     const hay=[r.customer_code,r.name,r.email,r.phone,r.address].join(' ').toLowerCase();
     if(hay.includes(t)) res.push({type:'Customer', title:`${r.name} (ID:${r.customer_code})`, description:`Email:${r.email} | Phone:${r.phone}`, link:`customers.html`});
-  });
-  allCache.suppliers.forEach(r=>{
-    const hay=[r.user_code,r.name,r.phone,r.email,r.designation,r.address].join(' ').toLowerCase();
-    if(hay.includes(t)) res.push({type:'Supplier', title:`${r.name} (ID:${r.user_code})`, description:`${r.designation} | ${r.phone}`, link:`suppliers.html`});
   });
   const box=document.getElementById('searchResults');
   box.innerHTML='';
